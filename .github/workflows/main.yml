@@ -1,14 +1,16 @@
 name: main
 on:
   push:
-    branches: [ main ]
+    branches:
+    - main
   pull_request:
-    branches: [ main ]
+    branches:
+    - main
 jobs:
   main:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - run: docker build -t mac2000/kube-rbac-helper .
-    - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+    - run: docker login -u mac2000 -p ${{ secrets.DOCKER_PASSWORD }}
     - run: docker push mac2000/kube-rbac-helper
