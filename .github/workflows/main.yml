@@ -11,6 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - run: docker build -t mac2000/kube-rbac-helper .
-    - run: docker login -u mac2000 -p ${{ secrets.DOCKER_PASSWORD }}
+    - run: docker build -t kube-rbac-helper .
+    
+    - run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u mac2000 --password-stdin
+    - run: docker tag kube-rbac-helper mac2000/kube-rbac-helper
     - run: docker push mac2000/kube-rbac-helper
+
+    - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u mac2000 --password-stdin
+    - run: docker tag kube-rbac-helper ghcr.io/mac2000/kube-rbac-helper
+    - run: docker push ghcr.io/mac2000/kube-rbac-helper
