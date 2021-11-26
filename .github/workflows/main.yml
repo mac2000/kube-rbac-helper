@@ -10,3 +10,5 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: docker build -t mac2000/kube-rbac-helper .
+    - run: docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ DOCKER_PASSWORD }}
+    - run: docker push mac2000/kube-rbac-helper
