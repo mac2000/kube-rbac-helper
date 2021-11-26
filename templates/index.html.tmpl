@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>kube-rbac-helper</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/resources/styles.css" />
+  </head>
+  <body>
+    {{ if .Error }}
+    <div class="error">{{ .Error }}</div>
+    {{ end }}
+    {{if .Data}}
+      <table>
+        <thead>
+          <tr>
+            <th><span>group</span></th>
+            <th><span>resource</span></th>
+            <th><span><label data-verb="list">list</label></span></th>
+            <th><span><label data-verb="get">get</label></span></th>
+            <th><span><label data-verb="create">create</label></span></th>
+            <th><span><label data-verb="delete">delete</label></span></th>
+            <th><span><label data-verb="update">update</label></span></th>
+            <th><span><label data-verb="patch">patch</label></span></th>
+            <th><span><label data-verb="watch">watch</label></span></th>
+            <th><span><label data-verb="deletecollection">deletecollection</label></span></th>
+          </tr>
+        </thead>
+        <tbody>
+          {{ range $group, $resources := .Data }}
+          {{ range $resource, $verbs := $resources }}
+            <tr>
+              <th>
+                {{ if $group }}
+                <label class="group" data-group="{{ $group }}">{{ $group }}</label>
+                {{ else }}
+                <label class="group empty" data-group=""></label>
+                {{ end }}
+              </th>
+              <th>
+                <label class="resource" data-resource="{{ $resource }}">{{ $resource }}</label>
+              </th>
+              <td>
+                {{ range $verb := $verbs }}
+                {{ if eq $verb "list" }}
+                <input type="checkbox" title="{{ $group }}&#10;{{ $resource }}&#10;list" data-group="{{ $group }}" data-resource="{{ $resource }}" data-verb="{{ $verb }}" />
+                {{ end }}
+                {{ end }}
+              </td>
+              <td>
+                {{ range $verb := $verbs }}
+                {{ if eq $verb "get" }}
+                <input type="checkbox" title="{{ $group }}&#10;{{ $resource }}&#10;get" data-group="{{ $group }}" data-resource="{{ $resource }}" data-verb="{{ $verb }}" />
+                {{ end }}
+                {{ end }}
+              </td>
+              <td>
+                {{ range $verb := $verbs }}
+                {{ if eq $verb "create" }}
+                <input type="checkbox" title="{{ $group }}&#10;{{ $resource }}&#10;create" data-group="{{ $group }}" data-resource="{{ $resource }}" data-verb="{{ $verb }}" />
+                {{ end }}
+                {{ end }}
+              </td>
+              <td>
+                {{ range $verb := $verbs }}
+                {{ if eq $verb "delete" }}
+                <input type="checkbox" title="{{ if $group }}{{ $group }}{{ else }}core{{ end }}&#10;{{ $resource }}&#10;delete" data-group="{{ $group }}" data-resource="{{ $resource }}" data-verb="{{ $verb }}" />
+                {{ end }}
+                {{ end }}
+              </td>
+              <td>
+                {{ range $verb := $verbs }}
+                {{ if eq $verb "update" }}
+                <input type="checkbox" title="{{ if $group }}{{ $group }}{{ else }}core{{ end }}&#10;{{ $resource }}&#10;update" data-group="{{ $group }}" data-resource="{{ $resource }}" data-verb="{{ $verb }}" />
+                {{ end }}
+                {{ end }}
+              </td>
+              <td>
+                {{ range $verb := $verbs }}
+                {{ if eq $verb "patch" }}
+                <input type="checkbox" title="{{ if $group }}{{ $group }}{{ else }}core{{ end }}&#10;{{ $resource }}&#10;patch" data-group="{{ $group }}" data-resource="{{ $resource }}" data-verb="{{ $verb }}" />
+                {{ end }}
+                {{ end }}
+              </td>
+              <td>
+                {{ range $verb := $verbs }}
+                {{ if eq $verb "watch" }}
+                <input type="checkbox" title="{{ if $group }}{{ $group }}{{ else }}core{{ end }}&#10;{{ $resource }}&#10;watch" data-group="{{ $group }}" data-resource="{{ $resource }}" data-verb="{{ $verb }}" />
+                {{ end }}
+                {{ end }}
+              </td>
+              <td>
+                {{ range $verb := $verbs }}
+                {{ if eq $verb "deletecollection" }}
+                <input type="checkbox" title="{{ if $group }}{{ $group }}{{ else }}core{{ end }}&#10;{{ $resource }}&#10;deletecollection" data-group="{{ $group }}" data-resource="{{ $resource }}" data-verb="{{ $verb }}" />
+                {{ end }}
+                {{ end }}
+              </td>
+            </tr>
+          {{ end }}
+          {{ end }}
+        </tbody>
+      </table>
+    {{ else }}
+      <div class="empty">No data</div>
+    {{ end }}
+<script>
+function notify() {
+  const data = Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(input => ({
+    group: input.getAttribute('data-group'), 
+    resource: input.getAttribute('data-resource'), 
+    verb: input.getAttribute('data-verb')
+  }))
+
+  parent.right.render(data)
+}
+
+document.addEventListener('input', event => {
+  if (event.target.type === 'checkbox') {
+    notify()
+  }
+})
+
+document.addEventListener('click', event => {
+  if (event.target.tagName === 'LABEL') {
+    const group = event.target.getAttribute('data-group')
+    const resource = event.target.getAttribute('data-resource')
+    const verb = event.target.getAttribute('data-verb')
+
+    let selector = 'input[type="checkbox"]'
+    if (group) {
+      selector = `${selector}[data-group="${group}"]`
+    } else if (resource) {
+      selector = `${selector}[data-resource="${resource}"]`
+    } else if (verb) {
+      selector = `${selector}[data-verb="${verb}"]`
+    }
+
+    const checked = document.querySelectorAll(`${selector}:checked`).length === 0
+    document.querySelectorAll(selector).forEach(cb => cb.checked = checked)
+
+    notify()
+  }
+})
+</script> 
+  </body>
+</html>

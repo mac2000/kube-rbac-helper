@@ -1,0 +1,58 @@
+<link rel="stylesheet" href="/resources/styles.css" />
+<pre>
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+name: demo
+namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+name: demo
+namespace: default
+rules:
+<span id="rules"></span>
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: demo
+  namespace: default
+roleRef:
+  kind: Role
+  name: demo
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: ServiceAccount
+  name: demo
+</pre>
+<script>
+function render(data) {
+    const tree = new Map()
+    for(const item of data) {
+        if (!tree.has(item.group)) {
+            tree.set(item.group, new Map())
+        }
+        if (!tree.get(item.group).has(item.resource)) {
+            tree.get(item.group).set(item.resource, new Set())
+        }
+        tree.get(item.group).get(item.resource).add(item.verb)
+    }
+    
+    const items = []
+    for(const [group, resources] of tree.entries()) {
+        for(const [resource, verbs] of resources) {
+            items.push({
+                apiGroups: [group],
+                resources: [resource],
+                verbs: verbs.size === 8 ? ['*'] : Array.from(verbs)
+            })
+        }
+    }
+
+    const yml = items.map(({apiGroups, resources, verbs}) => `- apiGroups: ${JSON.stringify(apiGroups)}\n  resources: ${JSON.stringify(resources)}\n  verbs: ${JSON.stringify(verbs)}`).join("\n")
+    document.getElementById("rules").innerText = yml
+}
+</script>

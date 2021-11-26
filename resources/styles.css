@@ -1,0 +1,94 @@
+html,
+body {
+  background-color: #ccc;
+  padding: 0;
+  margin: 0;
+  font-family: monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  html,
+  body {
+    background: black;
+    color: white;
+  }
+  tbody tr:hover {
+    background-color: #222;
+  }
+}
+
+@media (prefers-color-scheme: light) {
+  html,
+  body {
+    background: white;
+    color: black;
+  }
+  tbody tr:hover {
+    background-color: #eee;
+  }
+}
+
+body {
+  padding: 1em;
+}
+
+header h1 {
+  margin: 0;
+}
+
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+th {
+  font-weight: normal;
+}
+
+thead th {
+  vertical-align: bottom;
+  text-align: center;
+}
+
+thead th:nth-child(1) span,
+thead th:nth-child(2) span {
+  visibility: hidden;
+}
+
+thead th span {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  white-space: nowrap;
+}
+
+tbody th {
+  text-align: left;
+}
+
+tbody th:nth-child(1) {
+  text-align: right;
+}
+
+td {
+  vertical-align: middle;
+  text-align: center;
+}
+
+td input[type="checkbox"] {
+  margin: 0;
+  transform: translateY(1px);
+}
+
+.group.empty:before {
+  content: "core";
+  font-style: italic;
+}
+
+.group {
+  opacity: 0.5;
+  margin-right: 0.25em;
+}
+
+.error {
+    color: red;
+}
