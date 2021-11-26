@@ -7,48 +7,25 @@ on:
     branches:
     - main
 jobs:
-  build:
+  main:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - run: docker build -t kube-rbac-helper .
-  push:
-    needs: [ build ]
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-        - registry: ""
-          username: mac2000
-          password: ${{ secrets.DOCKER_PASSWORD }}
-          image: mac2000/kube-rbac-helper
-        - registry: ghcr.io
-          username: mac2000
-          password: ${{ secrets.GITHUB_TOKEN }}
-          image: ghcr.io/mac2000/kube-rbac-helper
-    steps:
-    - run: echo ${{ matrix.password }} | docker login ${{ matrix.registry }} -u ${{ matrix.username }} --password-stdin
-    - run: docker tag kube-rbac-helper ${{ matrix.image }}
-    - run: docker push ${{ matrix.image }}
-  # main:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - name: git clone
-  #     uses: actions/checkout@v2
+    - name: git clone
+      uses: actions/checkout@v2
 
-  #   - name: docker build
-  #     run: docker build -t kube-rbac-helper .
+    - name: docker build
+      run: docker build -t kube-rbac-helper .
     
-  #   - name: docker push
-  #     if: github.ref == 'refs/heads/main'
-  #     run: |
-  #       echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u mac2000 --password-stdin
-  #       docker tag kube-rbac-helper mac2000/kube-rbac-helper
-  #       docker push mac2000/kube-rbac-helper
+    - name: docker push
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u mac2000 --password-stdin
+        docker tag kube-rbac-helper mac2000/kube-rbac-helper
+        docker push mac2000/kube-rbac-helper
 
-  #   - name: docker push ghcr.io
-  #     if: github.ref == 'refs/heads/main'
-  #     run: |
-  #       echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u mac2000 --password-stdin
-  #       docker tag kube-rbac-helper ghcr.io/mac2000/kube-rbac-helper
-  #       docker push ghcr.io/mac2000/kube-rbac-helper
+    - name: docker push ghcr.io
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u mac2000 --password-stdin
+        docker tag kube-rbac-helper ghcr.io/mac2000/kube-rbac-helper
+        docker push ghcr.io/mac2000/kube-rbac-helper
