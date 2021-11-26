@@ -10,13 +10,22 @@ jobs:
   main:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - run: docker build -t kube-rbac-helper .
-    
-    - run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u mac2000 --password-stdin
-    - run: docker tag kube-rbac-helper mac2000/kube-rbac-helper
-    - run: docker push mac2000/kube-rbac-helper
+    - name: git clone
+      uses: actions/checkout@v2
 
-    - run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u mac2000 --password-stdin
-    - run: docker tag kube-rbac-helper ghcr.io/mac2000/kube-rbac-helper
-    - run: docker push ghcr.io/mac2000/kube-rbac-helper
+    - name: docker build
+      run: docker build -t kube-rbac-helper .
+    
+    - name: docker push
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u mac2000 --password-stdin
+        docker tag kube-rbac-helper mac2000/kube-rbac-helper
+        docker push mac2000/kube-rbac-helper
+
+    - name: docker push ghcr.io
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u mac2000 --password-stdin
+        docker tag kube-rbac-helper ghcr.io/mac2000/kube-rbac-helper
+        docker push ghcr.io/mac2000/kube-rbac-helper
